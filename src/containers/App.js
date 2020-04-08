@@ -1,16 +1,31 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
 import ErrorBoundry from '../components/ErrorBoundry';
 import './App.css';
+import { setSerachField } from '../actions';
+
+
+const mapStateToProps = state => {
+  return {
+    searchField: state.searchField
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSearchChange: (event) => dispatch(setSerachField(event.target.value))
+  }
+}
+
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
       robots: [],
-      searchfield: '',
     };
   }
 
@@ -25,22 +40,21 @@ class App extends Component {
   // so arrow functions, and this makes that the "this" value is according to where it was created
   // which in this case was the "App"
   // Use " this.setState" every time you want to change "state"
-  onSearchChange = (event) => {
-    this.setState({ searchfield: event.target.value });
-  };
 
   render() {
-    const filteredRobots = this.state.robots.filter((robot) =>
+    const {robots} = this.state; 
+    const { searchField, onSearchChange } = this.props;
+    const filteredRobots = robots.filter((robot) =>
       robot.name
         .toLowerCase()
-        .includes(this.state.searchfield.toLocaleLowerCase())
+        .includes(searchField.toLocaleLowerCase())
     );
 
-    return !this.state.robots.length ? <h1 className='dt center pv7-ns'>  Loading...</h1> : //ternary operator 
+    return !robots.length ? <h1 className='dt center pv7-ns'>  Loading...</h1> : //ternary operator 
 
       (<div className='tc'>
         <h1 className='f1'>Robofriends</h1>
-        <SearchBox searchChange={this.onSearchChange} />
+        <SearchBox searchChange={onSearchChange} />
         <Scroll>
           <ErrorBoundry>
             <CardList robots={filteredRobots} />
@@ -52,4 +66,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
