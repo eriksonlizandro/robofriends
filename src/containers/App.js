@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
-import CardList from './CardList';
-import SearchBox from './SearchBox';
-import { robots } from './robots';
+import CardList from '../components/CardList';
+import SearchBox from '../components/SearchBox';
 import './App.css'; 
+import Scroll from '../components/Scroll';
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      robots: robots,
+      robots:[],
       searchfield: '',
     };
+  }
+
+  componentDidMount(){
+    fetch('https://jsonplaceholder.typicode.com/users')
+    .then(response => response.json())
+    .then(users => this.setState({robots: users}));
   }
 
   // With anything that comes from React, so constructor and render pre-build in React
@@ -29,14 +35,19 @@ class App extends Component {
         .includes(this.state.searchfield.toLocaleLowerCase())
     );
 
-    return (
-      <div className='tc'>
+     return !this.state.robots.length ? <h1 className='dt center pv7-ns'>Loading...</h1>: 
+
+   (<div className='tc'>
         <h1 className='f1'>Robofriends</h1>
         <SearchBox searchChange={this.onSearchChange} />
+        <Scroll>
         <CardList robots={filteredRobots} />
+        </Scroll>
       </div>
     );
+    
   }
 }
 
 export default App;
+ 

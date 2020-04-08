@@ -1,6 +1,6 @@
 import React from 'react';
-import Card from '../components/card';
-import '../components/CardList.css'; 
+import Card from './card';
+import './CardList.css'; 
 
 //Here we created a function
 //This function creates a loop using .map
