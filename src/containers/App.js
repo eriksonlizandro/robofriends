@@ -5,34 +5,30 @@ import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
 import ErrorBoundry from '../components/ErrorBoundry';
 import './App.css';
-import { setSerachField } from '../actions';
+import { setSerachField, requestRobots } from '../actions';
 
 
 const mapStateToProps = state => {
   return {
-    searchField: state.searchField
+    searchField: state.searchRobots.searchField,
+    robots: state.requestRobots.robots, 
+    isPending: state.requestRobots.isPending,
+    error: state.requestRobots.error
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onSearchChange: (event) => dispatch(setSerachField(event.target.value))
+    onSearchChange: (event) => dispatch(setSerachField(event.target.value)),
+    onRequestRobots: () => dispatch(requestRobots())
   }
 }
 
 
 class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      robots: [],
-    };
-  }
-
+  
   componentDidMount() {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response => response.json())
-      .then(users => this.setState({ robots: users }));
+    this.props.onRequestRobots();
   }
 
   // With anything that comes from React, so constructor and render pre-build in React
@@ -41,16 +37,15 @@ class App extends Component {
   // which in this case was the "App"
   // Use " this.setState" every time you want to change "state"
 
-  render() {
-    const {robots} = this.state; 
-    const { searchField, onSearchChange } = this.props;
+  render() { 
+    const { searchField, onSearchChange, robots, isPending } = this.props;
     const filteredRobots = robots.filter((robot) =>
       robot.name
         .toLowerCase()
         .includes(searchField.toLocaleLowerCase())
     );
 
-    return !robots.length ? <h1 className='dt center pv7-ns'>  Loading...</h1> : //ternary operator 
+    return isPending ? <h1 className='dt center pv7-ns'>  Loading...</h1>: //ternary operator 
 
       (<div className='tc'>
         <h1 className='f1'>Robofriends</h1>
